@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
+    <meta name="theme-color" content="#FFFFFF">
+</head>
+
+<body class="h-100">
+    <div id="main" class="h-100">
+        <table id="loading" class="w-100 h-100">
+            <tr>
+                <td class="text-center">Loading ...
+                </td>
+            </tr>
+        </table>
+        <div id="login" class="container h-100">
+            <div class="row align-items-center justify-content-center h-100">
+                <div class="col col-md-4">
+                    <form id="login-form" name="login-form" onsubmit="return false;">
+                        <div class="form-group">
+                            <label for="loginUsername">Username</label>
+                            <input class="form-control" id="loginUsername" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="loginPassword">Password</label>
+                            <input type="password" class="form-control" id="loginPassword" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Login
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div id="profile" class="container h-100 overflow-auto">
+            <div class="row align-items-center justify-content-center">
+                <div class="col col-md-4">
+                    <form id="profile-form" name="profile-form" onsubmit="return false;">
+                        <div class="form-group">
+                            <label for="profileDisplayName">displayName</label>
+                            <input class="form-control" id="profileDisplayName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="profilePicUrl">profilePicUrl</label>
+                            <input class="form-control" id="profilePicUrl" required
+                                value="https://nova-web-static.s3.ap-southeast-1.amazonaws.com/event/nwv2-lib/client/icon.png">
+                        </div>
+                        <div class="form-group">
+                            <label for="profileFirstName">firstName</label>
+                            <input class="form-control" id="profileFirstName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="profileLastName">lastName</label>
+                            <input class="form-control" id="profileLastName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="profileEmail">email</label>
+                            <input type="email" class="form-control" id="profileEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="profileTitle">title</label>
+                            <input class="form-control" id="profileTitle" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="profileCompany">company</label>
+                            <input class="form-control" id="profileCompany" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="profileCountry">country</label>
+                            <select class="form-control" id="profileCountry">
+                                <option value="China/HK">China/HK</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="profileLinkedIn">linkedIn</label>
+                            <input class="form-control" id="profileLinkedIn" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="profileBio">bio</label> <textarea class="form-control" id="profileBio"
+                                required></textarea>
+                        </div>
+                        <div class="form-group form-check">
+                            <input type="checkbox" class="form-check-input" id="profileTncFlag" value="1" required>
+                            <label class="form-check-label" for="profileTncFlag">Term and Conditions</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div id="chat" class="container h-100">
+            <div class="row h-100">
+                <div class="col col-4">
+                    <button class="btn btn-secondary chat-logout btn-sm float-right mt-1">Logout
+                    </button>
+                    <h3>Inbox <span class="badge badge-danger chat-notifier">New</span>
+                    </h3>
+                    <ul id="chat-list" class="list-group">
+                    </ul>
+                </div>
+                <div class="col col-8">
+                    <div class="w-100 h-100 position-relative">
+                        <div id="chat-room-info" class="position-absolute p-3">
+                            <img class="chat-room-profile-image rounded-circle mr-3" style="width: 80px; height: 80px">
+                            <span class="chat-room-profile-name font-weight-bold" style="font-size: 2rem;"></span>
+                        </div>
+                        <div id="chat-messages" class="position-absolute overflow-auto p-3"
+                            style="border: 1px solid #dddddd; top: 110px; bottom: 70px; left: 0; right:0">
+                        </div>
+                        <div class="position-absolute"
+                            style="top: auto; bottom: 10px; left: 0; right:100px; height: 50px">
+                            <form id="chat-form" name="chat-form">
+                                <input id="chat-input" class="w-100 h-100 p-3" placeholder="Type your message here">
+                            </form>
+                        </div>
+                        <button class="btn btn-primary chat-send position-absolute"
+                            style="top: auto; bottom: 10px; left: auto; right:0px; width: 90px; height: 50px">Send
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"
+        integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous">
+        </script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous">
+        </script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+        integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous">
+        </script>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js">
+    </script>
+    <script>//     <li> new message</li>
+        //   <li>getChatList</li>
+        //   <li>getChatContent</li>
+        //   <li>MQTT</li>
+        $('#login').hide();
+        $('.chat-notifier').hide();
+        $('#chat').hide();
+        $('#profile').hide();
+        var eventId = 'b8412917-ba17-42f2-9ef3-5142d81669a6';
+        var endpoints = {
+            login: 'https://web.nova.hk/viewer/api/auth/v1/authenticate',
+            join: 'https://web.nova.hk/viewer/api/chat/v1/createChatProfile',
+            profile: 'https://web.nova.hk/viewer/api/chat/v1/getChatProfile',
+            contactList: 'https://web.nova.hk/viewer/api/chat/v1/getMyChatList',
+            allMessages: 'https://web.nova.hk/viewer/api/chat/v1/getMyChatContent',
+            newMessages: 'https://web.nova.hk/viewer/api/chat/v1/pullNewMessages',
+            send: 'https://web.nova.hk/viewer/api/chat/v1/send',
+            unread: 'https://web.nova.hk/viewer/api/chat/v1/hasUnreadMessage',
+            clickEvent: 'https://web.nova.hk/viewer/api/userSession/v1/clickEvent',
+            heartbeat: 'https://web.nova.hk/viewer/api/userStorage/v1/heartbeat'
+        };
+        var templates = {
+            myMessageItem: '<div class="my-1 text-right py-3"><div class="d-inline-block border border-secondaryl p-3" style="border-radius: 20px 20px; max-width: 70%"><div class="chat-message"></div><div class="chat-timestamp font-weight-lighter text-right" style="font-size:0.7rem"></div></div></div>',
+            yourMessageItem: '<div class="my-1 py-3"><div class="d-inline-block text-white bg-primary p-3" style="border-radius: 20px 20px; max-width: 70%"><div class="chat-message"></div><div class="chat-timestamp font-weight-lighter text-right" style="font-size:0.7rem"></div></div></div>',
+            contactListItem: '<li class="chat-list-item list-group-item position-relative"><img class="chat-profile-image rounded-circle mr-3 float-left" style="width: 50px; height: 50px"><div class="d-block"><div class="chat-last-message-timestamp font-weight-lighter text-right" style="font-size:0.7rem"></div><div class="chat-profile-name"></div><div class="chat-last-message" style="font-size:0.7rem"></div></div><div class="chat-unread rounded-circle bg-danger position-absolute" style="width:10px; height: 10px; top: 10px; left: 10px"></div></li>',
+            welcomeMessage: '<div class="text-secondary d-block mx-auto my-1 py-1" style="max-width: 70%">Meet other KODW speakers and participants! Send a private message to [Receiver] to make new connections. Type your message below to start a conversation with [Receiver].</div>'
+        };
+        var latestTimestamp = 0;
+        var heartbeatInterval = 5000;
+        function isLoggedIn() {
+            return !!getUserId() && !!getAccessToken();
+        }
+        function ifLoggedIn(isLoggedInCallback, isNotLoggedInCallback) {
+            // if (isLoggedIn()) {
+            //     isLoggedInCallback();
+            //     return;
+            // }
+            getChatProfile(function (data) {
+                if (data) {
+                    isLoggedInCallback(data);
+                } else {
+                    isNotLoggedInCallback();
+                }
+            });
+        }
+        function getChatProfile(callback) {
+            $.ajax(endpoints.profile, {
+                method: 'POST',
+                crossDomain: true,
+                data: JSON.stringify({}),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                crossDomain: true,
+                headers: {
+                    'Authorization': getAccessToken()
+                },
+                success: function (profile) {
+                    if (profile && profile.userId) {
+                        callback({
+                            profile: profile
+                        });
+                    } else if (profile && profile.message == 'no data') {
+                        callback({
+                            profile: null
+                        });
+                    } else {
+                        callback();
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    if (jqXHR.responseJSON && jqXHR.responseJSON.message == 'no data') {
+                        callback({
+                            profile: null
+                        });
+                    } else {
+                        callback();
+                    }
+                }
+            });
+        }
+        function getAccessToken() {
+            return Cookies.get('access-token');
+        }
+        function setAccessToken(accessToken) {
+            return Cookies.set('access-token', accessToken);
+        }
+        function getUserId() {
+            return Cookies.get('user-token');
+        }
+        function setUserId(userId) {
+            return Cookies.set('user-token', userId);
+        }
+        function logout() {
+            Cookies.remove('user-token');
+            Cookies.remove('access-token');
+            // location.reload();
+            showLoginForm();
+        }
+        function getEventId() {
+            return eventId;
+        }
+        function scrollToBottom() {
+            $('#chat-messages').scrollTop($('#chat-messages').prop('scrollHeight'));
+        }
+        function addMyMessage(message) {
+            addMessage(templates.myMessageItem, message)
+        }
+        function addTheirMessage(message) {
+            addMessage(templates.yourMessageItem, message)
+        }
+        function addMessage(templateHTML, message) {
+            var $element = $(templateHTML);
+            $element.find('.chat-message').text(message.payload.text);
+            $element.find('.chat-timestamp').text(new Date(message.sentAt).toLocaleString());
+            $element.appendTo('#chat-messages');
+            scrollToBottom();
+        }
+        // function sendRandomMessage() {
+        // addTheirMessage(randomMessages[Math.floor(Math.random() * (randomMessages.length - 1))]);
+        // }
+        function getCurrentRecipientId() {
+            return $('#chat-list li.active').attr('data-user-id');
+        }
+        function getCurrentChatId() {
+            return $('#chat-list li.active').attr('data-chat-id');
+        }
+        function sendMessage() {
+            var message = $('#chat-input').val();
+            if (message) {
+                // console.log('send message: ', message);
+                var userId = getCurrentRecipientId();
+                var chatId = getCurrentChatId();
+                if (!userId) return;
+                $('#chat-input').attr('disabled', true);
+                $.ajax(endpoints.send, {
+                    method: 'POST',
+                    crossDomain: true,
+                    data: JSON.stringify({
+                        recipientId: userId,
+                        message: {
+                            "type": "Text",
+                            "payload": {
+                                "text": message
+                            }
+                        }
+                    }),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    crossDomain: true,
+                    headers: {
+                        'Authorization': getAccessToken()
+                    },
+                    success: function (data) {
+                        $('#chat-input').val('');
+                        console.log('data', data);
+                        loadNewMessages(data.chatId);
+                        if (!chatId) {
+                            reloadContactList();
+                        }
+                    },
+                    error: apiErrorHandler(function (jqXHR, textStatus, errorThrown) {
+                        alert(jqXHR.responseJSON.message ? jqXHR.responseJSON.message : 'unknown error');
+                    }),
+                    complete: function () {
+                        $('#chat-input').attr('disabled', false).trigger('focus');
+                    }
+                });
+            }
+        }
+        function makeContact(profile, chat) {
+            var $element = $(templates.contactListItem)
+                .data('profile', profile)
+                .data('chat', chat)
+                .attr('data-user-id', profile.userId)
+                .attr('data-chat-id', chat ? chat.chatId : null)
+                .on('click', function () {
+                    $('#chat-list > li').removeClass('active');
+                    $(this).addClass('active');
+                    $('#chat-room-info .chat-room-profile-image').attr('src', profile.profilePicUrl);
+                    $('#chat-room-info .chat-room-profile-name').text(profile.displayName);
+                    loadMessages($(this).attr('data-chat-id'));
+                });
+            $element.find('img.chat-profile-image').attr('src', profile.profilePicUrl);
+            $element.find('.chat-profile-name').text(profile.displayName);
+            if (chat && chat.lastMessage) {
+                $element.find('.chat-last-message-timestamp').text(new Date(chat.lastMessage.sentAt).toLocaleString());
+                $element.find('.chat-last-message').text(chat.lastMessage.payload.text);
+                if (chat.lastSeen > chat.lastMessage.sentAt) {
+                    $element.find('.chat-unread').hide();
+                } else {
+                    $element.find('.chat-unread').show();
+                }
+            } else {
+                $element.find('.chat-unread').hide();
+            }
+            return $element;
+        }
+        function makeNewContact(userId) {
+            $.ajax(endpoints.profile, {
+                method: 'POST',
+                crossDomain: true,
+                data: JSON.stringify({
+                    userId: userId
+                }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                crossDomain: true,
+                headers: {
+                    'Authorization': getAccessToken()
+                },
+                success: function (profile) {
+                    // console.log('profile', profile);
+                    makeContact(profile).prependTo('#chat-list').trigger('click');
+                    showWelcomeMessage();
+                },
+                error: apiErrorHandler(function (jqXHR, textStatus, errorThrown) {
+                    alert(jqXHR.responseJSON.message ? jqXHR.responseJSON.message : 'unknown error');
+                })
+            });
+        }
+        function showWelcomeMessage() {
+            $(templates.welcomeMessage).appendTo($('#chat-messages').empty());
+        }
+        function loadMessages(chatId) {
+            $('#chat-messages').empty();
+            if (!chatId) {
+                $('#chat-input').attr('disabled', false).trigger('focus');
+                return;
+            }
+            $.ajax(endpoints.allMessages, {
+                method: 'POST',
+                crossDomain: true,
+                data: JSON.stringify({
+                    chatId: chatId
+                }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                crossDomain: true,
+                headers: {
+                    'Authorization': getAccessToken()
+                },
+                success: function (messages) {
+                    // console.log('messages', messages);
+                    var myUserId = getUserId();
+                    if (messages) {
+                        messages.reverse();
+                        $.each(messages, function (i, message) {
+                            var isMyMessage = message.sentBy == myUserId;
+                            if (isMyMessage) {
+                                addMyMessage(message);
+                            } else {
+                                addTheirMessage(message);
+                            }
+                            $('#chat-list .chat-list-item[data-chat-id="' + chatId + '"] .chat-unread').hide();
+                            latestTimestamp = message.sentAt;
+                        });
+                    } else {
+                        showWelcomeMessage();
+                    }
+                },
+                error: apiErrorHandler(function (jqXHR, textStatus, errorThrown) {
+                    alert(jqXHR.responseJSON.message ? jqXHR.responseJSON.message : 'unknown error');
+                }),
+                complete: function () {
+                    $('#chat-input').attr('disabled', false).trigger('focus');
+                }
+            });
+        }
+        function loadNewMessages(chatId) {
+            if (!chatId) return;
+            // $('#chat-messages').empty();
+            $.ajax(endpoints.newMessages, {
+                method: 'POST',
+                crossDomain: true,
+                data: JSON.stringify({
+                    chatId: chatId,
+                    since: latestTimestamp + 1
+                }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                crossDomain: true,
+                headers: {
+                    'Authorization': getAccessToken()
+                },
+                success: function (messages) {
+                    // console.log('messages', messages);
+                    var myUserId = getUserId();
+                    messages.reverse();
+                    $.each(messages, function (i, message) {
+                        var isMyMessage = message.sentBy == myUserId;
+                        if (isMyMessage) {
+                            addMyMessage(message);
+                        } else {
+                            addTheirMessage(message);
+                        }
+                        $('#chat-list .chat-list-item[data-chat-id="' + chatId + '"] .chat-unread').hide();
+                        latestTimestamp = message.sentAt;
+                    });
+                },
+                error: apiErrorHandler(function (jqXHR, textStatus, errorThrown) {
+                    alert(jqXHR.responseJSON.message ? jqXHR.responseJSON.message : 'unknown error');
+                }),
+                complete: function () {
+                    $('#chat-input').attr('disabled', false).trigger('focus');
+                }
+            });
+        }
+        function sortChatsByTime(chats) {
+            return chats.slice().sort(function (t1, t2) {
+                return t2.lastMessage.sentAt - t1.lastMessage.sentAt;
+            });
+        }
+        function loadContactList() {
+            var recipientId = getRecipientId();
+            var chatList = $('#chat-list').empty();
+            $('#chat-input').attr('disabled', true);
+            $.ajax(endpoints.contactList, {
+                method: 'POST',
+                crossDomain: true,
+                data: JSON.stringify({}),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                crossDomain: true,
+                headers: {
+                    'Authorization': getAccessToken()
+                },
+                success: function (chats) {
+                    // console.log('chats', chats);
+                    var isRecipientNew = !!recipientId;
+                    $.each(sortChatsByTime(chats), function (i, chat) {
+                        if (!chat.members.length || !chat.members[0].profile) return;
+                        if (recipientId && recipientId == chat.members[0].profile.userId) {
+                            isRecipientNew = false;
+                        }
+                        makeContact(chat.members[0].profile, chat).appendTo(chatList);
+                    });
+                    if (isRecipientNew) {
+                        makeNewContact(recipientId);
+                    } else if (recipientId) {
+                        chatList.find('li[data-user-id="' + recipientId + '"]').trigger('click');
+                    }
+                },
+                error: apiErrorHandler(function (jqXHR, textStatus, errorThrown) {
+                    alert(jqXHR.responseJSON.message ? jqXHR.responseJSON.message : 'unknown error');
+                })
+            });
+        }
+        function reloadContactList() {
+            var recipientId = getRecipientId()
+            $.ajax(endpoints.contactList, {
+                method: 'POST',
+                crossDomain: true,
+                data: JSON.stringify({}),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                crossDomain: true,
+                headers: {
+                    'Authorization': getAccessToken()
+                },
+                success: function (chats) {
+                    // console.log('chats', chats);
+                    var chatList = $('#chat-list').empty();
+                    // $('#chat-input').attr('disabled', true);
+                    $.each(sortChatsByTime(chats), function (i, chat) {
+                        makeContact(chat.members[0].profile, chat).appendTo(chatList);
+                    });
+                    $('#chat-list li[data-user-id="' + recipientId + '"]').addClass('active');
+                },
+                error: apiErrorHandler(function (jqXHR, textStatus, errorThrown) {
+                    alert(jqXHR.responseJSON.message ? jqXHR.responseJSON.message : 'unknown error');
+                })
+            });
+        }
+        function getRecipientId() {
+            return getUrlVars()['to'];
+        }
+        function startChat() {
+            subscribeChatNotification(getEventId(), getUserId());
+            checkForUnreadMessages();
+            loadContactList();
+            showChat();
+            sendHeartbeat();
+        }
+        function getUrlVars() {
+            var vars = [],
+                hash;
+            var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+            for (var i = 0; i < hashes.length; i++) {
+                hash = hashes[i].split('=');
+                vars.push(hash[0]);
+                vars[hash[0]] = hash[1];
+            }
+            return vars;
+        }
+        function onChatNotified() {
+            $('.chat-notifier').show();
+        }
+        function onNewMessage(data) {
+            if (data.chatId == getCurrentChatId()) {
+                loadNewMessages(data.chatId);
+            } else {
+                reloadContactList();
+            }
+            // reload chat list again
+            // reload current chat messages
+        }
+        function onUnauthorized() {
+            logout();
+        }
+        function checkForUnreadMessages() {
+            if (!getAccessToken()) return;
+            $.ajax(endpoints.unread, {
+                method: 'POST',
+                crossDomain: true,
+                data: JSON.stringify({}),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                crossDomain: true,
+                headers: {
+                    'Authorization': getAccessToken()
+                },
+                success: function (data) {
+                    if (data && data.hasUnreadMessage) {
+                        onChatNotified();
+                    }
+                },
+                error: apiErrorHandler(function (jqXHR, textStatus, errorThrown) {
+                    alert(jqXHR.responseJSON.message ? jqXHR.responseJSON.message : 'unknown error');
+                })
+            });
+        }
+        function showChat() {
+            $('#login').hide();
+            $('#profile').hide();
+            $('#chat').show();
+        }
+        function showProfileForm() {
+            $('#chat').hide();
+            $('#login').hide();
+            $('#profile').show();
+        }
+        function showLoginForm() {
+            $('#chat').hide();
+            $('#profile').hide();
+            $('#login').show();
+        }
+        function tryStartChat() {
+            ifLoggedIn(function (data) {
+                if (data && data.profile) {
+                    // showProfileForm();
+                    startChat();
+                } else {
+                    showProfileForm();
+                }
+            }, function () {
+                showLoginForm();
+            });
+        }
+        function sendHeartbeat() {
+            if (!getAccessToken()) return;
+            $.ajax(endpoints.heartbeat, {
+                method: 'POST',
+                crossDomain: true,
+                data: JSON.stringify({}),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                crossDomain: true,
+                headers: {
+                    'Authorization': getAccessToken()
+                },
+                success: function (data) {
+                },
+                error: apiErrorHandler(function (jqXHR, textStatus, errorThrown) {
+                    alert(jqXHR.responseJSON.message ? jqXHR.responseJSON.message : 'unknown error');
+                }),
+                complete: function () {
+                    setTimeout(sendHeartbeat, heartbeatInterval);
+                }
+            });
+        }
+        function sendClickEvent(id, label = null, metadata = {}) {
+            if (!getAccessToken()) return;
+            $.ajax(endpoints.clickEvent, {
+                method: 'POST',
+                crossDomain: true,
+                data: JSON.stringify({
+                    "identifier": id,
+                    "label": label,
+                    "metadata": metadata
+                }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                crossDomain: true,
+                headers: {
+                    'Authorization': getAccessToken()
+                },
+                success: function (data) {
+                },
+                error: apiErrorHandler(function (jqXHR, textStatus, errorThrown) {
+                    alert(jqXHR.responseJSON.message ? jqXHR.responseJSON.message : 'unknown error');
+                }),
+                complete: function () {
+                    setTimeout(sendHeartbeat, heartbeatInterval);
+                }
+            });
+        }
+        function apiErrorHandler(callback) {
+            return function (jqXHR, textStatus, errorThrown) {
+                if (jqXHR.responseJSON && jqXHR.responseJSON.message) {
+                    switch (jqXHR.responseJSON.message) {
+                        case 'Unauthorized':
+                            onUnauthorized();
+                            break;
+                        default:
+                            callback(jqXHR, textStatus, errorThrown);
+                    }
+                }
+            }
+        }
+        $('#chat-form').on('submit', function (e) {
+            e.stopImmediatePropagation();
+            e.stopPropagation();
+            sendMessage();
+            return false;
+        });
+        $('#login-form').on('submit', function (e) {
+            e.stopImmediatePropagation();
+            e.stopPropagation();
+            var data = {
+                eventId: getEventId(),
+                credentials: {
+                    "email": $('#loginUsername').val(),
+                    "passcode": $('#loginPassword').val(),
+                }
+            };
+            $.ajax(endpoints.login, {
+                method: 'POST',
+                crossDomain: true,
+                data: JSON.stringify(data),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                crossDomain: true,
+                success: function (data) {
+                    if (data && data.accessToken && data.userInitialProfile && data.userInitialProfile.userId) {
+                        setAccessToken(data.accessToken);
+                        setUserId(data.userInitialProfile.userId);
+                        tryStartChat();
+                    }
+                },
+                error: apiErrorHandler(function (jqXHR, textStatus, errorThrown) {
+                    alert(jqXHR.responseJSON.message ? jqXHR.responseJSON.message : 'unknown error');
+                })
+            });
+            return false;
+        });
+        $('#profile-form').on('submit', function (e) {
+            e.stopImmediatePropagation();
+            e.stopPropagation();
+            var data = {
+                "displayName": $('#profileDisplayName').val(),
+                "profilePicUrl": $('#profilePicUrl').val(),
+                "firstName": $('#profileFirstName').val(),
+                "lastName": $('#profileLastName').val(),
+                "email": $('#profileEmail').val(),
+                "title": $('#profileTitle').val(),
+                "company": $('#profileCompany').val(),
+                "country": $('#profileCountry').val(),
+                "linkedIn": $('#profileLinkedIn').val(),
+                "bio": $('#profileBio').val(),
+                "tncFlag": $('#profileTncFlag').is(':checked'),
+            };
+            $.ajax(endpoints.join, {
+                method: 'POST',
+                crossDomain: true,
+                data: JSON.stringify(data),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                crossDomain: true,
+                headers: {
+                    'Authorization': getAccessToken()
+                },
+                success: function (data) {
+                    if (data && data.chatProfileItem) {
+                        startChat();
+                    } else {
+                        alert('unknown error')
+                    }
+                },
+                error: apiErrorHandler(function (jqXHR, textStatus, errorThrown) {
+                    alert(jqXHR.responseJSON.message ? jqXHR.responseJSON.message : 'unknown error');
+                })
+            });
+            return false;
+        });
+        $('.chat-send').on('click', function () {
+            sendMessage();
+        });
+        $('.chat-logout').on('click', function () {
+            logout();
+        });
+        $('#chat-list > li').on('click', function () {
+            $('#chat-list > li').removeClass('active');
+            $(this).addClass('active');
+            $('#chat-messages').empty();
+            $('#chat-input').trigger('focus');
+        });
+        $('#chat-list > li:first-child').trigger('click');
+        $(document).ready(function () {
+            $('#loading').hide();
+            addChatListener(onChatNotified);
+            addChatListener(onNewMessage);
+            tryStartChat();
+        });</script>
+    <script src="https://novawebv2.dev.julojo.com/chat.20acc972db3e3d9265bc.bundle.js?f7f062865b1764a546f0">
+    </script>
+</body>
+
+</html>

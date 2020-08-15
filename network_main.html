@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
+    <meta name="theme-color" content="#FFFFFF">
+</head>
+
+<body class="h-100">
+    <div id="main" class="h-100">
+        <table id="loading" class="w-100 h-100">
+            <tr>
+                <td class="text-center">Loading ...
+                </td>
+            </tr>
+        </table>
+        <div id="profile" class="container h-100 overflow-auto">
+            <div class="row align-items-center justify-content-center">
+                <div class="col col-md-4">
+                    <form id="profile-form" name="profile-form" onsubmit="return false;">
+                        <div class="form-group">
+                            <label for="profileDisplayName">displayName</label>
+                            <input class="form-control" id="profileDisplayName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="profilePicUrl">profilePicUrl</label>
+                            <input class="form-control" id="profilePicUrl" required
+                                value="https://nova-web-static.s3.ap-southeast-1.amazonaws.com/event/shared/icon.png">
+                        </div>
+                        <div class="form-group">
+                            <label for="profileFirstName">firstName</label>
+                            <input class="form-control" id="profileFirstName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="profileLastName">lastName</label>
+                            <input class="form-control" id="profileLastName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="profileEmail">email</label>
+                            <input type="email" class="form-control" id="profileEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="profileTitle">title</label>
+                            <input class="form-control" id="profileTitle" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="profileCompany">company</label>
+                            <input class="form-control" id="profileCompany" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="profileCountry">country</label>
+                            <select class="form-control" id="profileCountry">
+                                <option value="China/HK">China/HK</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="profileLinkedIn">linkedIn</label>
+                            <input class="form-control" id="profileLinkedIn" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="profileBio">bio</label> <textarea class="form-control" id="profileBio"
+                                required></textarea>
+                        </div>
+                        <div class="form-group form-check">
+                            <input type="checkbox" class="form-check-input" id="profileTncFlag" value="1" required>
+                            <label class="form-check-label" for="profileTncFlag">Term and Conditions</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div id="memberlist">
+            <div class="container">
+                <h3>Networking
+                </h3>
+                <div id="members" class="row">
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"
+        integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous">
+        </script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous">
+        </script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+        integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous">
+        </script>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js">
+    </script>
+    <script>//       <li> use getInitialProfile to get accessToken for accessing community api</li>
+        //       <li>use getChatProfile to validate whether uesr to join the networking ( create one before joining )</li>
+        //       <li>list member</li>
+        $('#login').hide();
+        $('#profile').hide();
+        $('#memberlist').hide();
+        var eventId = 'b8412917-ba17-42f2-9ef3-5142d81669a6';
+        var endpoints = {
+            members: 'https://web.nova.hk/viewer/api/chat/v1/listMembers',
+            checklogin: 'https://web.nova.hk/viewer/api/user/v1/getInitialProfile',
+            profile: 'https://web.nova.hk/viewer/api/chat/v1/getChatProfile',
+            inbox: './networking_inbox'
+        };
+        var templates = {
+            memberItem: '<div class="col col-md-4"><img class="profile-image rounded-circle float-right" style="width: 100px; height: 100px"><h4 class="profile-name"></h4><div class="profile-country"></div><div class="profile-title"></div><div class="profile-company"></div><div class="profile-bio"></div><div class="profile-inbox"><a class="profile-inbox-link">Message me</a></div><div class="text-primary profile-self">It\'s you!</div></div>',
+        };
+        function isLoggedIn() {
+            return !!getUserId() && !!getAccessToken();
+        }
+        function ifLoggedIn(isLoggedInCallback, isNotLoggedInCallback) {
+            // if (isLoggedIn()) {
+            //     isLoggedInCallback();
+            //     return;
+            // }
+            $.ajax(endpoints.checklogin, {
+                method: 'GET',
+                crossDomain: true,
+                // data: JSON.stringify({}),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                crossDomain: true,
+                xhrFields: {
+                    withCredentials: true
+                },
+                success: function (data) {
+                    console.log(data);
+                    if (data && data.initialProfile) {
+                        setAccessToken(data.initialProfile.lastIssuedAccessToken);
+                        setUserId(data.initialProfile.userId);
+                        isLoggedInCallback();
+                    } else {
+                        isNotLoggedInCallback();
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // console.error(jqXHR.responseJSON);
+                    // alert(jqXHR.responseJSON.message ? jqXHR.responseJSON.message : 'unknown error');
+                    isNotLoggedInCallback(jqXHR, textStatus, errorThrown);
+                }
+            });
+        }
+        function getChatProfile(callback) {
+            $.ajax(endpoints.profile, {
+                method: 'POST',
+                crossDomain: true,
+                data: JSON.stringify({}),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                crossDomain: true,
+                headers: {
+                    'Authorization': getAccessToken()
+                },
+                success: function (profile) {
+                    console.log("profile: ", profile)
+                    if (profile && profile.userId) {
+                        callback({
+                            profile: profile
+                        });
+                    } else if (profile && profile.message == 'no data') {
+                        callback({
+                            profile: null
+                        });
+                    } else {
+                        callback();
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    if (jqXHR.responseJSON && jqXHR.responseJSON.message == 'no data') {
+                        callback({
+                            profile: null
+                        });
+                    } else {
+                        callback();
+                    }
+                }
+            });
+        }
+        function getAccessToken() {
+            return Cookies.get('access-token');
+        }
+        function setAccessToken(accessToken) {
+            return Cookies.set('access-token', accessToken);
+        }
+        function getUserId() {
+            return Cookies.get('user-token');
+        }
+        function setUserId(userId) {
+            return Cookies.set('user-token', userId);
+        }
+        function logout() {
+            Cookies.remove('user-token');
+            Cookies.remove('access-token');
+            // location.reload();
+            alert('Please login')
+        }
+        function getEventId() {
+            return eventId;
+        }
+        function getUrlVars() {
+            var vars = [],
+                hash;
+            var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+            for (var i = 0; i < hashes.length; i++) {
+                hash = hashes[i].split('=');
+                vars.push(hash[0]);
+                vars[hash[0]] = hash[1];
+            }
+            return vars;
+        }
+        function loadMemberList() {
+            $.ajax(endpoints.members, {
+                method: 'POST',
+                crossDomain: true,
+                data: JSON.stringify({}),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                crossDomain: true,
+                headers: {
+                    'Authorization': getAccessToken()
+                },
+                success: function (members) {
+                    // console.log('profile', profile);
+                    console.log(members);
+                    if (members) {
+                        $.each(members, function (i, member) {
+                            var $element = $(templates.memberItem);
+                            $element.find('img.profile-image').attr('src', member.profilePicUrl);
+                            $element.find('.profile-name').text(member.displayName);
+                            $element.find('.profile-country').text(member.country);
+                            $element.find('.profile-title').text(member.title);
+                            $element.find('.profile-company').text(member.company);
+                            $element.find('.profile-bio').text(member.bio);
+                            if (getUserId() == member.pk) {
+                                $element.find('.profile-inbox').hide();
+                            } else {
+                                $element.find('.profile-self').hide();
+                                $element.find('.profile-inbox-link').attr('href', endpoints.inbox + '?to=' + member.pk);
+                            }
+                            $element.appendTo('#members');
+                        });
+                    }
+                    $('#memberlist').show();
+                },
+                error: apiErrorHandler(function (jqXHR, textStatus, errorThrown) {
+                    alert(jqXHR.responseJSON.message ? jqXHR.responseJSON.message : 'unknown error');
+                })
+            });
+        }
+        function onChatNotified(data) {
+            // console.log(data);
+            $('.chat-notifier').show();
+        }
+        function onNewMessage(data) {
+        }
+        function onUnauthorized() {
+            logout();
+        }
+        function apiErrorHandler(callback) {
+            return function (jqXHR, textStatus, errorThrown) {
+                if (jqXHR.responseJSON && jqXHR.responseJSON.message) {
+                    switch (jqXHR.responseJSON.message) {
+                        case 'Unauthorized':
+                            onUnauthorized();
+                            break;
+                        default:
+                            callback(jqXHR, textStatus, errorThrown);
+                    }
+                }
+            }
+        }
+        function showMemberList() {
+            $('#profile').hide();
+            $('#memberlist').show();
+            loadMemberList();
+        }
+        function showProfileForm() {
+            $('#memberlist').hide();
+            $('#profile').show();
+        }
+        $('#profile-form').on('submit', function (e) {
+            e.stopImmediatePropagation();
+            e.stopPropagation();
+            var data = {
+                "displayName": $('#profileDisplayName').val(),
+                "profilePicUrl": $('#profilePicUrl').val(),
+                "firstName": $('#profileFirstName').val(),
+                "lastName": $('#profileLastName').val(),
+                "email": $('#profileEmail').val(),
+                "title": $('#profileTitle').val(),
+                "company": $('#profileCompany').val(),
+                "country": $('#profileCountry').val(),
+                "linkedIn": $('#profileLinkedIn').val(),
+                "bio": $('#profileBio').val(),
+                "tncFlag": $('#profileTncFlag').is(':checked'),
+            };
+            $.ajax(endpoints.join, {
+                method: 'POST',
+                crossDomain: true,
+                data: JSON.stringify(data),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                crossDomain: true,
+                headers: {
+                    'Authorization': getAccessToken()
+                },
+                success: function (data) {
+                    if (data && data.chatProfileItem) {
+                        startChat();
+                    } else {
+                        alert('unknown error')
+                    }
+                },
+                error: apiErrorHandler(function (jqXHR, textStatus, errorThrown) {
+                    alert(jqXHR.responseJSON.message ? jqXHR.responseJSON.message : 'unknown error');
+                })
+            });
+            return false;
+        });
+        $(document).ready(function () {
+            $('#loading').hide();
+            addChatListener(onChatNotified);
+            addChatListener(onNewMessage);
+            ifLoggedIn(function () {
+                getChatProfile(function (data) {
+                    if (data && data.profile) {
+                        console.log("data.profile", data);
+                        showMemberList();
+                    } else if (data) {
+                        showProfileForm();
+                    } else {
+                        alert('unknown error')
+                    }
+                });
+            }, function (jqXHR, textStatus, errorThrown) {
+                // console.error(jqXHR, textStatus, errorThrown);
+                alert(textStatus);
+            })
+        });</script>
+    <script src="https://novawebv2.dev.julojo.com/chat.20acc972db3e3d9265bc.bundle.js?f7f062865b1764a546f0">
+    </script>
+</body>
+
+</html>
